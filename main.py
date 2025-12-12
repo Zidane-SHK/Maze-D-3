@@ -3,7 +3,6 @@ import sys
 import time
 
 # Import configurations
-# IMPORTANT: Added HUMAN_PATHS to the import
 from config import GRAPH as ADJACENCY_LIST, COORDS as NODES, START_NODE, MISSION_CHECKPOINTS, HUMAN_PATHS, CANNON_NODES, FINISH_NODE
 from vis import Visualizer
 from algo import a_star_search
@@ -27,17 +26,16 @@ def solve_mission():
 
         print(f"Calculating segment: {current_start} -> {target}")
 
-        # --- PATH LOOKUP LOGIC ---
         # Look up the allowed path in the dictionary using the start node
         allowed_segment = []
         
         if current_start in HUMAN_PATHS:
             allowed_segment = HUMAN_PATHS[current_start]
-            print(f"   > Guided Path Active: {len(allowed_segment)} steps enforced.")
+            print(f"   > Guided Path: {len(allowed_segment)} steps.")
         else:
             print(f"   > Warning: No specific path defined for start node {current_start}.")
 
-        # --- EXECUTE SEARCH ---
+        # Search Execution
         segment_path = a_star_search(
             start_node=current_start, 
             goal_node=target, 
@@ -48,11 +46,11 @@ def solve_mission():
         )
 
         if not segment_path:
-            print(f"CRITICAL ERROR: No path to {target}. The pirate is stuck!")
-            # Teleport to target to prevent crash, but this means game logic failed
+            print(f"ERROR: No path to {target}. The pirate is stuck!")
+            # Game Logic Fail executes if crash occurs
             segment_path = [current_start, target]
         
-        # --- UPDATE GAME STATE ---
+        # State change
         if target in CANNON_NODES:
             if target not in cannons_loaded:
                 cannons_loaded.append(target)
@@ -72,6 +70,7 @@ def solve_mission():
     return full_path
 
 def main():
+    # Events, paths, and display in game
     pygame.init()
     viz = Visualizer()
     clock = pygame.time.Clock()

@@ -1,6 +1,6 @@
 import math
 import heapq
-
+# Formula used --> F = G + H
 def get_euclidean_distance(node_a, node_b, coords):
     """
     Calculates the straight-line distance (in pixels) between two nodes.
@@ -14,7 +14,7 @@ def get_euclidean_distance(node_a, node_b, coords):
 def get_distance_to_human_path(current_node, human_path_list, coords):
     """
     Returns 0 if the node is in the allowed path segment.
-    Returns 5000 if it is a deviation, acting as a soft barrier.
+    Returns 5000 if else.
     """
     if not human_path_list:
         return 0
@@ -47,16 +47,15 @@ def a_star_search(start_node, goal_node, graph, coords, human_path=None, forbidd
     
     came_from = {}
     
-    # Initialize scores to Infinity
+    # Initialize score
     g_score = {node: float('inf') for node in coords}
     g_score[start_node] = 0
     
     f_score = {node: float('inf') for node in coords}
     
-    # --- CONFIGURATION ---
-    # Weight > 0 guides the pirate to follow the 'ideal' sequence 
-    # to avoid burning bridges (like the 5->47 shortcut trap).
-    HUMAN_BIAS_WEIGHT = 5.0
+    # Weight > 0 guides the pirate to follow the human path 
+    # to avoid node confusion (like the 5->47 shortcut trap).
+    HUMAN_BIAS_WEIGHT = 1.0
     
     # Initial Calculation
     h1 = 0 
@@ -78,26 +77,22 @@ def a_star_search(start_node, goal_node, graph, coords, human_path=None, forbidd
         if current in graph:
             for neighbor, weight in graph[current]:
                 
-                # --- CHECK 1: Prevent Immediate Backtracking ---
+                
                 # Do not immediately return to the node we just came from.
                 if current in came_from and neighbor == came_from[current]:
                     continue
 
-                # --- CHECK 2: Prevent Global Retracing (With Exception) ---
-                # Check if this node is allowed by the current Human Path segment.
+                
+                # Check if this node is allowed by the current human solution.
                 is_in_human_segment = (human_path is not None) and (neighbor in human_path)
                 
-                # Block the node IF:
+                # Block the node if:
                 # 1. It is in the forbidden list (visited previously).
-                # 2. AND it is NOT the goal.
-                # 3. AND it is NOT explicitly allowed by the current human segment.
+                # 2. Not Goal.
                 if neighbor in forbidden_nodes and neighbor != goal_node and not is_in_human_segment:
                     continue
-
-                # --- 3. CALCULATE REAL DISTANCE COST (The Math Fix) ---
-                # Instead of using the arbitrary graph weight (1), we calculate 
-                # the actual pixel distance. This fixes the scaling issue where 
-                # Heuristic (500px) overpowered Cost (1).
+                # the actual pixel distance. 
+                # Heuristic (500px) overpowers Cost (1).
                 dist_cost = get_euclidean_distance(current, neighbor, coords)
                 
                 # New G Score is current G + Actual Pixel Distance
@@ -107,11 +102,10 @@ def a_star_search(start_node, goal_node, graph, coords, human_path=None, forbidd
                     came_from[neighbor] = current
                     g_score[neighbor] = tentative_g_score
                     
-                    # --- 4. HEURISTIC TUNING ---
                     # H1: Euclidean Distance to Goal (in pixels)
                     h1_goal = get_euclidean_distance(neighbor, goal_node, coords)
                     
-                    # H2: Human Bias (Soft Lock to path)
+                    # H2: Human Bias 
                     h2_human = get_distance_to_human_path(neighbor, human_path, coords)
                     
                     # Total Score

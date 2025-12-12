@@ -17,12 +17,12 @@ class Visualizer:
             (50, 205, 50)    # Lime Green
         ]
         
-        # Switch colors at the end of each path segment (The Cannons)
+        # Switch colors at the end of each path (The Cannons)
         self.SWITCH_NODES = {'16', '24', '8'}
         
-        # Load Background
+        # Load Background 
         self.bg_image = None
-        image_path = r'/Users/zidanekhan/Downloads/Maze D-3/bg.jpeg'
+        image_path = 'assets/bg.jpeg'
         try:
             raw_image = pygame.image.load(image_path)
             self.bg_image = pygame.transform.scale(raw_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -33,7 +33,7 @@ class Visualizer:
 
         # Load Icon
         self.player_icon = None
-        icon_path = r'/Users/zidanekhan/Downloads/Maze D-3/icon.png'  
+        icon_path = 'assets/icon.png'
         try:
             raw_icon = pygame.image.load(icon_path)
             # Resize icon for new screen size

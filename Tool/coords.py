@@ -1,14 +1,16 @@
+
+# Initially used to visualize and select nodes in game window, however latter scrapped due to irrelevance
+
 from PIL import Image
 import matplotlib.pyplot as plt # pip install
-
-image_path = r'/Users/zidanekhan/PirateMaze/Game/Assets/maze.png'
+image_path = 'assets/bg.jpeg'
 
 def pick_coordinates(image_path):
     """Interactive coordinate picker"""
     img = Image.open(image_path)
     
     # Resize to target dimensions
-    img = img.resize((920, 1128))
+    img = img.resize((1266, 1548))
     
     coords = {}
     
@@ -28,7 +30,7 @@ def pick_coordinates(image_path):
     return coords
 
 # Usage
-coordinates = pick_coordinates('/Users/zidanekhan/PirateMaze/Game/main.py')
+coordinates = pick_coordinates('main.py')
 
 # Print in config.py format
 print("\nCOORDS = {coords}")
